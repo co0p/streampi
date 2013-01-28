@@ -1,0 +1,14 @@
+(dp1
+S'test'
+p2
+S'test'
+p3
+sS'dradio'
+p4
+S'http://dradio_mp3_dlf_m.akacast.akamaistream.net/7/249/142684/v1/gnl.akacast.akamaistream.net/dradio_mp3_dlf_m'
+p5
+sS'key'
+p6
+S'value'
+p7
+s.
