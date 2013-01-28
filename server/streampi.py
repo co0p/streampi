@@ -1,7 +1,7 @@
 #!/usr/bin/python
 
 from bottle import route, run, error
-import cPickle, json
+import cPickle, json, ConfigParser
 import pygst
 pygst.require("0.10")
 import gst, gobject
@@ -12,13 +12,10 @@ import gst, gobject
 # settings 
 #----------------------------------------------
 
-#TODO - use config file - http://gotofritz.net/blog/weekly-challenge/restful-python-api-bottle/
-PORT = 8000
-DEBUG = True
-PATH = "streamlist.p"
-streamlist = None
+# holds the settings
+config = None
 
-#creates a playbin (plays media form an uri) 
+# this is the gstreamer playbin
 player = gst.element_factory_make("playbin", "player")
 
 
@@ -26,6 +23,30 @@ player = gst.element_factory_make("playbin", "player")
 #----------------------------------------------
 # load / save stream list to file
 #----------------------------------------------
+
+# load settings from cfg file
+def loadConfigFromFile(path):
+
+	global config
+	config = ConfigParser.ConfigParser()
+	
+	#  if failed, use defaults
+	try:
+		config.readfp(open(path))
+		print "loaded '" +path+ "'"
+
+	except IOError:
+		print "couldn't load 'streampi.cfg', using defaults."
+		config.add_section("streampi")
+		config.set("streampi", "port", "8000")
+		config.set("streampi", "debug", "True")
+		config.set("streampi", "path", "streamlist.p")
+
+		print "writing '" +path+ "' file"
+		config.write(open(path, 'wb'))
+	#if
+#def
+
 def loadStreamsFromFile(path):
 	global streamlist
 
@@ -146,10 +167,7 @@ def stop():
 
 	global player
 	player.set_state(gst.STATE_NULL)
-	if state is gst.STATE_NULL:
-		return response("200", "stop playing")
-	else:
-		return response(500), "failed to stop stream"
+	return response("200", "stop playing")
 
 
 #----------------------------------------------
@@ -157,12 +175,19 @@ def stop():
 #----------------------------------------------
 
 def main() :
+
+	# load config
+	loadConfigFromFile("streampi.cfg")
+
 	# parse resourcelist
-	loadStreamsFromFile(PATH)
+	loadStreamsFromFile(config.get("streampi", "path"))
 
 	# run webserver
-	run(host='localhost', port=PORT, debug=DEBUG)
+	run(host='localhost',  
+		port=config.get("streampi","port"),  
+		debug=config.get("streampi", "debug"))
 
 #
 if __name__ == '__main__':
 	main()
+
