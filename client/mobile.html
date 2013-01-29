@@ -1,0 +1,80 @@
+<!DOCTYPE html> 
+<html> 
+<head> 
+	<title>StreamPi</title> 
+	<meta name="viewport" content="width=device-width, initial-scale=1"> 
+	<link rel="stylesheet" href="http://code.jquery.com/mobile/1.3.0-beta.1/jquery.mobile-1.3.0-beta.1.min.css" />
+	<script src="http://code.jquery.com/jquery-1.9.0.min.js"></script>
+	<script src="http://code.jquery.com/mobile/1.3.0-beta.1/jquery.mobile-1.3.0-beta.1.min.js"></script>
+</head> 
+<body> 
+
+
+<div data-role="page" id="player">
+
+
+	<!-- 
+	THIS IS THE HEADER
+	 -->
+	<div data-role="header" class="ui-grid-b">
+		<div class="ui-block-a"> StreamPi </div>
+		<div class="ui-block-b">
+			<input type="text" name="current" id="current" value="dradio"  />
+		</div>
+		<div class="ui-block-c">
+			<a href="#" data-role="button" data-icon="" id="stopButton">stop playing</a>
+		</div>
+	</div><!-- /header -->
+
+
+
+	<div data-role="content">
+		<!-- 
+		maybe in the future support volume
+		<div>
+		<form>
+		<label for="slider-0">change volume:</label>
+		<input type="range" name="slider" id="slider-0" value="25" min="0" max="100" />
+		</form>
+		</div>
+ 		-->
+
+
+		<!-- 
+		THIS IS THE LIST OF STREAMS
+		 -->
+		<div>
+		<label for="streamlist">select a stream to play:</label>
+		<ul  name="streamlist" data-role="listview" data-inset="true" data-filter="false">
+		<li><a href="#">Acura</a> </li>
+		<li><a href="#">Audi</a></li>
+		<li><a href="#">BMW</a></li>
+		<li><a href="#">Cadillac</a></li>
+		<li><a href="#">Ferrari</a></li>	
+		</ul>	
+		</div>
+
+
+		<!--
+		ADD / DELETE A STREAM
+		 -->
+		<form>
+		<label>add a new stream:</label>
+		<label class="ui-hidden-accessible" for="streamname">stream name:</label>
+		<input type="text" name="streamname" id="streamname" value="" placeholder="stream name"/>
+
+		<label class="ui-hidden-accessible" for="streamurl">stream url:</label>
+		<input type="text" name="streamurl" id="streamurl" value="" placeholder="stream url"/>
+
+		<button type="submit" name="submit" value="submit">add</button>
+
+		or 
+
+		<button type="submit" name="submit" value="submit" data-icon="delete">delete currently playing stream ?</button>
+
+
+	</div> <!-- /content -->
+</div><!-- /page -->
+
+</body>
+</html>
