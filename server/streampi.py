@@ -1,6 +1,6 @@
 #!/usr/bin/python
 
-from bottle import route, run, error
+from bottle import route, run, error, hook, response
 import cPickle, json, ConfigParser
 import pygst
 pygst.require("0.10")
@@ -17,6 +17,15 @@ config = None
 
 # this is the gstreamer playbin
 player = gst.element_factory_make("playbin", "player")
+
+
+
+
+# we need this hook for 'Access-Control-Allow-Origin'
+@hook('after_request')
+def enable_cors():
+	response.headers['Access-Control-Allow-Origin'] = '*'
+
 
 
 
@@ -68,7 +77,7 @@ def writeStreamToFile(path):
 # json response helper
 #----------------------------------------------
 # every response is a json object
-def response(code, message, data = None):
+def jsonResponse(code, message, data = None):
 	if data is None:
 		return {'status':code, 'message':message}
 	else:
@@ -76,16 +85,14 @@ def response(code, message, data = None):
 		return {'status':code, 'message':message, 'data':jsondata}
 
 
-
-
 #----------------------------------------------
 # data manipulation 
 #----------------------------------------------
 
 # returns a list of streams
-@route('/get')
+@route('/get', method='GET')
 def getList():
-	return response(200, "", streamlist)
+	return jsonResponse(200, "", streamlist)
 
 
 # returns a list of streams
@@ -95,9 +102,10 @@ def getList(name):
 	if name is not None and len(name) > 0:
 
 		if name in streamlist:
-			return response(200, "", streamlist[name])
+			return jsonResponse
+	(200, "", streamlist[name])
 		
-	return response(500, "couldn't find stream")
+	return jsonResponse(500, "couldn't find stream")
 
 
 
@@ -106,14 +114,14 @@ def getList(name):
 def add(name=None, url=None):
 
 	if name is None or len(name) < 1:
-		return response(500, "name missing")
+		return jsonResponse(500, "name missing")
 
 	if url is None or len(url) < 1:
-		return response(500, "url missing")
+		return jsonResponse(500, "url missing")
 
 	streamlist[name] = url
 	writeStreamToFile(PATH)
-	return response(200, "added stream '" +name+ "' to list")
+	return jsonResponse(200, "added stream '" +name+ "' to list")
 
 
 
@@ -123,9 +131,9 @@ def delete(name):
 
 	if name is not None and name in streamlist:
 		del streamlist[name]
-		return response(200, "deleted '" +name+ "'stream")
+		return jsonResponse(200, "deleted '" +name+ "'stream")
 
-	return response(500, "couldn't delete stream")
+	return jsonResponse(500, "couldn't delete stream")
 
 
 #----------------------------------------------
@@ -135,7 +143,7 @@ def delete(name):
 # play a stream
 @route('/play')
 def play():
-	return response("500", "missing name of stream")
+	return jsonResponse("500", "missing name of stream")
 
 @route('/play/<name>')
 def play(name):
@@ -154,10 +162,10 @@ def play(name):
 
 		#start playing
 		player.set_state(gst.STATE_PLAYING)
-		return response("200", "start playing")
+		return jsonResponse(200, "start playing")
 
 	else:
-		return response(500, "missing stream")
+		return jsonResponse(500, "missing stream")
 
 
 
@@ -167,7 +175,7 @@ def stop():
 
 	global player
 	player.set_state(gst.STATE_NULL)
-	return response("200", "stop playing")
+	return jsonResponse("200", "stop playing")
 
 
 #----------------------------------------------

@@ -1,1 +1,70 @@
-todo
+<!DOCTYPE html>
+<html>
+<head>
+  <style>img{ height: 100px; float: left; }</style>
+  <script src="jquery-1.9.0.min.js"></script>
+</head>
+<body>
+
+<script>
+
+var url = 'http://localhost:8000';
+
+/*
+* the update info button
+*/
+$(function(){
+    $("#statusButton").click(function(){
+    	$("#playingNow").html("nothin");
+
+		$.getJSON(url+ '/status', function(data) {
+		$("#status").html(data.message);
+		});
+    });
+});
+
+
+/*
+* the stop button
+*/
+$(function(){
+    $("#stopButton").click(function(){
+		$.getJSON(url+ '/stop', function(data) {
+		$("#flash").html(data.message);
+		});
+    });
+});
+
+
+/*
+* the play button
+*/
+$(function(){
+    $("#playButton").click(function(){
+		$.getJSON(url+ '/play/dradio', function(data) {
+		$("#flash").html(data.message);
+		});
+    });
+});
+</script>
+
+<div id="flash"></div>
+
+<h1>StreamPI</h1>
+<div id="status"></div>
+<input type="button" id="updateButton" name="updateButton" value="UPDATE" />
+<input type="button" id="stopButton" name="stopButton" value="STOP PLAYING" />
+
+
+
+<h2>List of streams</h2>
+
+<input type="button" id="playButton" name="playButton" value="PLAY DRADIO" />
+
+
+<h2>add a new stream</h2>
+
+TODO
+
+</body>
+</html>
