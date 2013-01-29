@@ -7,9 +7,9 @@ convert your raspberrypi to a budget sonos streaming machine, controlled by a we
 Test-Setup
 ---------
 
-1. start the server : python ./streampi.py (will listen on localhost:8000)
-2. go to http://localhost:8000/play/dradio to play the dradio stream
-
+1. start the server : [server/] python ./streampi.py (will listen on localhost:8000)
+2. start the client: [client/] ./client.sh (will listen on port 8001)
+3. go to http://localhost:8001, push some buttons
 
 REST commands
 -------------
