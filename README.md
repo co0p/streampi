@@ -8,7 +8,7 @@ convert your raspberrypi to a budget sonos streaming machine, controlled by a we
 work in progress screenshot
 ---------------------------
 
-![an image of the controlling website, work in progress](https://raw.github.com/co0p/master/streampi/doc/mobile.png "the controlling website")
+![an image of the controlling website, work in progress](https://raw.github.com/co0p/streampi/master/doc/mobile.png "the controlling website")
 
 
 
