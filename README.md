@@ -4,7 +4,16 @@ streampi
 convert your raspberrypi to a budget sonos streaming machine, controlled by a website 
 
 
-Test-Setup
+
+work in progress screenshot
+---------------------------
+
+![an image of the controlling website, work in progress](/doc/mobile.png "the controlling website")
+
+
+
+
+Get started
 ---------
 
 1. start the server : [server/] python ./streampi.py (will listen on localhost:8000)
