@@ -16,9 +16,15 @@ work in progress screenshot
 Get started
 ---------
 
-1. start the server : [server/] python ./streampi.py (will listen on localhost:8000)
-2. start the client: [client/] ./client.sh (will listen on port 8001)
-3. go to http://localhost:8001, push some buttons
+1. start the server : [server/] python ./streampi.py (will listen on 192.168.0.41:8000)
+2. go to http://192.168.0.41:8000, push some buttons and listen to a stream
+
+
+Warning
+--------
+
+This is work in progress, no security, no error handling what so ever ! Use at your OWN risk.
+
 
 REST commands
 -------------
