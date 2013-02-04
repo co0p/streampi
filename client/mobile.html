@@ -7,28 +7,165 @@
 	<script src="http://code.jquery.com/jquery-1.9.0.min.js"></script>
 	<script src="http://code.jquery.com/mobile/1.3.0-beta.1/jquery.mobile-1.3.0-beta.1.min.js"></script>
 </head> 
+
+
+
+<script type="text/javascript">
+
+// global vars
+var url = "http://192.168.0.41:8000/api";
+var streams;
+var lastMessage = "";
+
+var NO_CONNECTION = "failed connecting so server";
+
+// helper 
+function writeMessage(text){
+    $("#message").val(text);
+}
+
+
+// /*
+// * get the status every 5 seconds 
+// */
+// setInterval(function() { 
+//     $.getJSON(url+"/status", function(response) {
+// 			var message = "";
+// 			if (response.error == true) {
+// 				message = "couldnt stop: " + response.message;
+// 			} else {
+// 				message = "stopped playing";
+// 			}
+
+// 			writeMessage(message);
+// 			console.log(text);
+// 		});
+		
+// 		writeMessage(NO_CONNECTION);
+// 		return false;
+// }, 5000);
+
+
+/* connect functions to buttons */
+$(function(){
+
+	/*
+	* stop playing the current stream 
+	*/
+	function stopPlaying() {
+		$.getJSON(url+"/stop", function(response) {
+			var message = "";
+			if (response.error == true) {
+				message = "couldnt stop: " + response.message;
+			} else {
+				message = "stopped playing";
+			}
+
+			writeMessage(message);
+			console.log(message);
+		});
+		
+		writeMessage(NO_CONNECTION);
+		return false;
+	}
+	$('#stopButton').click(stopPlaying);
+
+
+	/* 
+	* starts playing a streams 
+	*/
+	function startPlaying() {
+		alert(stream);
+		var stream = $(this).attr('stream');
+		
+
+		$.getJSON(url+"/play/"+stream, function(response) {
+			var message = "";
+			if (response.error == true) {
+				message = "couldnt start: " + stream;
+			} else {
+				message = "started to play '" +stream+ "'";
+			}
+
+			writeMessage(message);
+			console.log(message);
+		});
+		
+		writeMessage(NO_CONNECTION);
+		return false;	
+	}
+	$(".playButton").click(startPlaying);
+
+
+	/* 
+	* load streams from server 
+	*/
+	function loadStreams() {
+		$.getJSON(url+"/get", function(response) {
+			var message = "";
+			if (response.error == false) {
+				streams = response.streams;	
+				console.log(streams);
+
+				// add entries to list
+				if (Object.keys(streams).length > 0) {
+					message = "received " +Object.keys(streams).length+ " streams.";
+					var items = [];
+					  $.each(streams, function (name, url) {
+					    items.push('<li>' + 
+					    	'<a href="#" class="playButton" data-role="button" stream="' +name+ '">' +name+ '<p>' +url+ '</p> </a>' +
+					    	'<a href="#" data-icon="delete" data-role="button" class="deleteButton" stream="' +name+ '" > delete </a>' +
+					    	'</li>');
+					  });  
+
+					  // update list and register actions
+					  $('#streamlist').html(items.join(''));
+					  $('#streamlist').listview('refresh');
+					  $(".playButton").click(startPlaying);
+				} else {
+					message = "received no streams."
+				}
+			}
+
+			writeMessage(message);
+			console.log(message);
+		});
+	}
+	$(document).ready(loadStreams);
+	$("#refreshButton").click(loadStreams);
+
+});
+
+
+</script>
+
+
+
+
 <body> 
 
-
-<div data-role="page" id="player">
-
+<div data-role="page" id="player" data-theme="b">
 
 	<!-- 
 	THIS IS THE HEADER
 	 -->
-	<div data-role="header" class="ui-grid-b">
-		<div class="ui-block-a"> StreamPi </div>
-		<div class="ui-block-b">
-			<input type="text" name="current" id="current" value="dradio"  />
-		</div>
-		<div class="ui-block-c">
-			<a href="#" data-role="button" data-icon="" id="stopButton">stop playing</a>
-		</div>
+	<div data-role="header" >
+		<h1> StreamPi </h1>
+		<a href="#"  data-role="button" data-icon="refresh" class="ui-btn-right" id="refreshButton">refresh</a>
 	</div><!-- /header -->
 
 
-
 	<div data-role="content">
+
+		<!--
+		DISPLAY MESSAGES OR CURRENT STREAM
+		-->
+		<div>
+		<label for="streamlist">current status:</label>
+			<input type="text" name="message" id="message" value="" readonly="true"/>
+			<a href="#" data-role="button" data-icon="" id="stopButton">stop playing</a>
+		</div>
+
 		<!-- 
 		maybe in the future support volume
 		<div>
@@ -45,13 +182,9 @@
 		 -->
 		<div>
 		<label for="streamlist">select a stream to play:</label>
-		<ul  name="streamlist" data-role="listview" data-inset="true" data-filter="false">
-		<li><a href="#">Acura</a> </li>
-		<li><a href="#">Audi</a></li>
-		<li><a href="#">BMW</a></li>
-		<li><a href="#">Cadillac</a></li>
-		<li><a href="#">Ferrari</a></li>	
-		</ul>	
+		<ul id="streamlist" name="streamlist"  data-role="listview" data-inset="true">
+			empty
+		</ul>
 		</div>
 
 
@@ -66,14 +199,17 @@
 		<label class="ui-hidden-accessible" for="streamurl">stream url:</label>
 		<input type="text" name="streamurl" id="streamurl" value="" placeholder="stream url"/>
 
-		<button type="submit" name="submit" value="submit">add</button>
-
-		or 
-
-		<button type="submit" name="submit" value="submit" data-icon="delete">delete currently playing stream ?</button>
+		<a data-role="button" name="addStream">add</a>
 
 
 	</div> <!-- /content -->
+
+	<div data-role="footer">
+		<center>&copy; Julian Godesa, 2013</center>
+	</div><!-- /header -->
+
+
+
 </div><!-- /page -->
 
 </body>
