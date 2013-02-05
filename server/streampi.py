@@ -131,6 +131,7 @@ def delete(name):
 
 	if name is not None and name in streamlist:
 		del streamlist[name]
+		writeStreamToFile(config.get("streampi", "path"))
 		return {'error':False, 'message':"deleted '" +name+ "'stream"}
 
 	return {'error':True, 'message':"couldn't delete stream"}

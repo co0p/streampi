@@ -21,9 +21,25 @@ var NO_CONNECTION = "failed connecting so server";
 
 // helper 
 function writeMessage(text){
+	console.log(text);
     $("#message").val(text);
 }
 
+function ValidUrl(str) {
+  // var pattern = new RegExp('^(https?:\/\/)?'+ // protocol
+  //   '((([a-z\d]([a-z\d-]*[a-z\d])*)\.)+[a-z]{2,}|'+ // domain name
+  //   '((\d{1,3}\.){3}\d{1,3}))'+ // OR ip (v4) address
+  //   '(\:\d+)?(\/[-a-z\d%_.~+]*)*'+ // port and path
+  //   '(\?[;&a-z\d%_.~+=-]*)?'+ // query string
+  //   '(\#[-a-z\d_]*)?$','i'); // fragment locater
+
+  var pattern = /(ftp|http|https):\/\/(\w+:{0,1}\w*@)?(\S+)(:[0-9]+)?(\/|\/([\w#!:.?+=&%@!\-\/]))?/;
+  if(!pattern.test(str)) {
+    return false;
+  } else {
+    return true;
+  }
+}
 
 // /*
 // * get the status every 5 seconds 
@@ -75,10 +91,8 @@ $(function(){
 	* starts playing a streams 
 	*/
 	function startPlaying() {
-		alert(stream);
 		var stream = $(this).attr('stream');
 		
-
 		$.getJSON(url+"/play/"+stream, function(response) {
 			var message = "";
 			if (response.error == true) {
@@ -102,7 +116,7 @@ $(function(){
 	*/
 	function loadStreams() {
 		$.getJSON(url+"/get", function(response) {
-			var message = "";
+			var message = "couldn't get any streams";
 			if (response.error == false) {
 				streams = response.streams;	
 				console.log(streams);
@@ -122,17 +136,92 @@ $(function(){
 					  $('#streamlist').html(items.join(''));
 					  $('#streamlist').listview('refresh');
 					  $(".playButton").click(startPlaying);
+					  $(".deleteButton").click(deleteStream);
 				} else {
 					message = "received no streams."
 				}
 			}
-
 			writeMessage(message);
-			console.log(message);
 		});
 	}
 	$(document).ready(loadStreams);
 	$("#refreshButton").click(loadStreams);
+
+
+	/* 
+	* deletes a selected stream
+	*/
+	function deleteStream() {
+		var stream = $(this).attr('stream');
+		
+		writeMessage("deleting '"+stream+"' from list ...");
+
+		$.getJSON(url+"/delete/"+stream, function(response) {
+			var message = "";
+			if (response.error == true) {
+				message = "couldn't delete: " + stream;
+			} else {
+				message = "deleted '" +stream+ "' from the list";
+			}
+
+			writeMessage(message);
+
+			// fetch changed list from server
+			loadStreams();
+		});
+		
+		writeMessage(NO_CONNECTION);
+		return false;	
+	}
+
+
+
+	/* 
+	* add a new stream
+	*/
+	function addNewStream() {
+		var streamname = $('[name=streamname]').val();
+		var streamurl = $('[name=streamurl]').val();
+		
+		// sanity check
+		if (streamname == "" || streamurl == "" ) {
+			var message = "no empty arguments allowed";
+			writeMessage(message);
+			return false;
+		}
+
+		if (!ValidUrl(streamurl)) {
+			var message = "the streamurl must be a valid url";
+			$('[name=streamurl]').val("");
+			writeMessage(message);
+			return false;	
+		}
+
+		writeMessage("adding '"+streamname+"' to the list...");
+		
+		$.getJSON(url+"/add/"+streamname+"/"+streamurl, function(response) {
+			var message = "";
+			if (response.error == true) {
+				message = "couldn't add: " + streamname;
+			} else {
+				message = "added'" +streamname+ "' to the list";
+			}
+
+			writeMessage(message);
+
+			// fetch changed list from server
+			loadStreams();
+
+			// reset input fields
+			$('[name=streamname]').val("");
+			$('[name=streamurl]').val("");
+
+		});
+		
+		writeMessage(NO_CONNECTION);
+		return false;	
+	}
+	$('#addStream').click(addNewStream);
 
 });
 
@@ -183,7 +272,7 @@ $(function(){
 		<div>
 		<label for="streamlist">select a stream to play:</label>
 		<ul id="streamlist" name="streamlist"  data-role="listview" data-inset="true">
-			empty
+			no streams found
 		</ul>
 		</div>
 
@@ -191,7 +280,7 @@ $(function(){
 		<!--
 		ADD / DELETE A STREAM
 		 -->
-		<form>
+		<div>
 		<label>add a new stream:</label>
 		<label class="ui-hidden-accessible" for="streamname">stream name:</label>
 		<input type="text" name="streamname" id="streamname" value="" placeholder="stream name"/>
@@ -199,8 +288,8 @@ $(function(){
 		<label class="ui-hidden-accessible" for="streamurl">stream url:</label>
 		<input type="text" name="streamurl" id="streamurl" value="" placeholder="stream url"/>
 
-		<a data-role="button" name="addStream">add</a>
-
+		<a href="#" data-role="button" class="addStream" id="addStream">add</a>
+		</div>
 
 	</div> <!-- /content -->
 

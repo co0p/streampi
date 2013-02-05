@@ -1,14 +1,10 @@
 (dp1
-S'dradio'
+S'dima'
 p2
-S'http://www.dradio.de/streaming/dlf.m3u'
+S'http://85.21.79.93:8040'
 p3
 sS'chillout'
 p4
 S'http://listen.di.fm/public3/chillout.pls'
 p5
-sS'dima'
-p6
-S'http://85.21.79.93:8040'
-p7
 s.
